@@ -31,7 +31,11 @@ openvpn_config_{{name}}:
         user: {{ map.user }}
         group: {{ map.group }}
     - watch_in:
+      {% if "Arch" == grains['os'] %}
+      - service: openvpn_service_{{name}}
+      {% else %}
       - service: openvpn_service
+      {% endif %}
 {% endfor %}
 
 # Deploy client config files
@@ -47,7 +51,11 @@ openvpn_config_{{name}}:
         user: {{ map.user }}
         group: {{ map.group }}
     - watch_in:
+      {% if "Arch" == grains['os'] %}
+      - service: openvpn_service_{{name}}
+      {% else %}
       - service: openvpn_service
+      {% endif %}
 {% endfor %}
 
 # Deploy peer config files
@@ -67,9 +75,20 @@ openvpn_config_{{name}}:
 {% endfor %}
 
 # Ensure openvpn service is running and autostart is enabled
+{% if "Arch" == grains['os'] %}
+{% for name, config in salt['pillar.get']('openvpn:server', {}).iteritems() %}
+openvpn_service_{{name}}:
+  service.running:
+    - name: {{ map.service }}@{{ name }}
+    - enable: True
+    - require:
+      - pkg: openvpn_pkgs
+{% endfor %}
+{% else %}
 openvpn_service:
   service.running:
     - name: {{ map.service }}
     - enable: True
     - require:
       - pkg: openvpn_pkgs
+{% endif %}
