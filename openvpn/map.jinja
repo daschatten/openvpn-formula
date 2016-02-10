@@ -15,5 +15,13 @@
         'user': 'nobody',
         'group': 'nogroup',
     },
+    'Arch': {
+        'pkgs': ['openvpn'],
+        'service': 'openvpn@server',
+        'conf_dir': '/etc/openvpn',
+        'dh_files': ['2048','4096'],
+        'user': 'nobody',
+        'group': 'nobody',
+    },
 
 }, grain='os', merge=salt['pillar.get']('openvpn:lookup')) %}
