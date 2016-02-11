@@ -84,6 +84,14 @@ openvpn_service_{{name}}:
     - require:
       - pkg: openvpn_pkgs
 {% endfor %}
+{% for name, config in salt['pillar.get']('openvpn:client', {}).iteritems() %}
+openvpn_service_{{name}}:
+  service.running:
+    - name: {{ map.service }}@{{ name }}
+    - enable: True
+    - require:
+      - pkg: openvpn_pkgs
+{% endfor %}
 {% else %}
 openvpn_service:
   service.running:
